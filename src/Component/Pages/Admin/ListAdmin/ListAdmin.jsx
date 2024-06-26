@@ -2,24 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const ListAdmin = () => {
-    const [users, setUsers] = useState([]);
+    const [admins, setAdmins] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        // Load mock users initially
-        fetchMockUsers();
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const { token } = JSON.parse(storedUser);
+            fetchAdmins(token, 1); // Fetch admins on component mount with page number 1
+        }
     }, []);
 
-    const fetchMockUsers = () => {
-        // Mock data
-        const mockUsers = [
-            { id: 14666666666666666666, displayName: 'aya', email: 'aya@example.com', role: 'Admin', avatar: 'fa-solid fa-user' },
-            { id: 2, displayName: 'arwa', email: 'arwa@example.com', role: 'Admin', avatar: 'fa-solid fa-user' },
-            { id: 3, displayName: 'omnia', email: 'omnia@example.com', role: 'Admin', avatar: 'fa-solid fa-user' },
-            { id: 4, displayName: 'eman', email: 'eman@example.com', role: 'Admin', avatar: 'fa-solid fa-user' },
-            // Add more mock users as needed
-        ];
-        setUsers(mockUsers);
+    const fetchAdmins = async (token, pageNumber) => {
+        try {
+            const url = `http://plantify.runasp.net/api/Dashboard/get-all-admin-list?pageNumber=${pageNumber}`;
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch admins');
+            }
+
+            const data = await response.json();
+            setAdmins(data);
+        } catch (error) {
+            console.error('Error fetching admins:', error);
+        }
     };
 
     const handleSearchChange = (e) => {
@@ -29,28 +43,30 @@ const ListAdmin = () => {
     const handleSearchSubmit = (e) => {
         e.preventDefault();
 
-        // If search query is empty, fetch all users
         if (searchQuery.trim() === '') {
-            fetchMockUsers();
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                const { token } = JSON.parse(storedUser);
+                fetchAdmins(token, 1); // Fetch all admins if search query is empty
+            }
         } else {
-            // Filter mock data based on search query
-            setUsers((prevUsers) =>
-                prevUsers.filter(user =>
-                    user.displayName.toLowerCase().includes(searchQuery.toLowerCase())
-                )
+            // Filter admins based on search query
+            const filteredAdmins = admins.filter(admin =>
+                admin.displayName.toLowerCase().includes(searchQuery.toLowerCase())
             );
+            setAdmins(filteredAdmins);
         }
     };
 
     return (
         <div id="admin" className="admin-container">
-            <h2 style={{ backgroundColor: 'deeppink' }}>Users List</h2>
+            <h2 style={{ backgroundColor: 'deeppink' }}>Admins List</h2>
             <form className="search-form" onSubmit={handleSearchSubmit}>
                 <input 
                     type="text" 
                     className="form-control search-input" 
                     name="username" 
-                    placeholder="Enter The user Name" 
+                    placeholder="Enter The Admin Name" 
                     value={searchQuery}
                     onChange={handleSearchChange}
                 />
@@ -58,7 +74,7 @@ const ListAdmin = () => {
             </form>
             <br />
             <br />
-            {users.length > 0 ? (
+            {admins.length > 0 ? (
                 <table id="admin-table" className="admin-table">
                     <thead className="ahead">
                         <tr>
@@ -71,24 +87,29 @@ const ListAdmin = () => {
                         </tr>
                     </thead>
                     <tbody id="admin-table-body" className="bad">
-                        {users.map((user) => (
-                            <tr key={user.id}>
-                                <td style={{ color: 'rgb(111, 107, 107)' }}>{user.id}</td>
+                        {admins.map((admin) => (
+                            <tr key={admin.id}>
+                                <td style={{ color: 'rgb(111, 107, 107)' }}>{admin.id}</td>
                                 <td style={{ textAlign: 'center' }}>
                                     <div className="avatar-container">
-                                        <i className={`fa-fw ${user.avatar}`} />
+                                        {/* Assuming you have an image_name property for admin */}
+                                        {admin.image_name ? (
+                                            <img src={admin.image_name} alt={admin.displayName} className="avatar-image" />
+                                        ) : (
+                                            <i className={`fa-fw ${admin.avatar}`} />
+                                        )}
                                     </div>
                                 </td>
-                                <td style={{ color: 'rgb(111, 107, 107)' }}>{user.displayName}</td>
-                                <td style={{ color: 'rgb(111, 107, 107)' }}>{user.email}</td>
-                                <td style={{ color: 'rgb(111, 107, 107)' }}>{user.role}</td>
+                                <td style={{ color: 'rgb(111, 107, 107)' }}>{admin.displayName}</td>
+                                <td style={{ color: 'rgb(111, 107, 107)' }}>{admin.email}</td>
+                                <td style={{ color: 'rgb(111, 107, 107)' }}>{admin.role}</td>
                                 <td>
-                                    {/* Mock action button */}
                                     <div className="action-buttons">
-                                        <Link className='action-edit btn btn-primary' to="/EditAdmin">
+                                        {/* Replace these with actual links */}
+                                        <Link className='action-edit btn btn-primary' to={`/EditAdmin/${admin.id}`}>
                                             <i className="fa-solid fa-pen-to-square"></i>
                                         </Link>
-                                        <Link to="/DeleteUser" className='action-delete btn btn-danger'>
+                                        <Link to={`/DeleteAdmin/${admin.id}`} className='action-delete btn btn-danger'>
                                             <i className="fa-regular fa-trash-can"></i>
                                         </Link>
                                     </div>
@@ -98,7 +119,7 @@ const ListAdmin = () => {
                     </tbody>
                 </table>
             ) : (
-                <h2 className="mt-5 alert alert-warning">There is Not Any User</h2>
+                <h2 className="mt-5 alert alert-warning">No admins found</h2>
             )}
         </div>
     );

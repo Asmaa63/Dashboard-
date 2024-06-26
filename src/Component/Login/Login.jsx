@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
+import loginImgae from './login.jpg';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -53,7 +54,7 @@ const LoginPage = () => {
         <input type="checkbox" name="" id="flip" />
         <div className="cover-form">
           <div className="front">
-            <img src={require("./login.jpg").default} alt="Login" />
+            <img src={loginImgae} alt="Login" />
           </div>
         </div>
         <form onSubmit={handleLogin}>
