@@ -1,0 +1,229 @@
+:root{
+  --main-color:#358D48;
+}
+.login-home-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    padding: 40px 0;
+    margin-top: 50px;
+    overflow-x: hidden;
+  }
+  
+  .container-login {
+    position: relative;
+    max-width: 900px;
+    width: 100%;
+    height: 350px;
+    background-color: white;
+    padding: 20px 30px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    perspective: 2700px;
+    text-align: center;
+  }
+  
+  .container-login #flip:checked ~ .cover-form {
+    transform: rotateY(-180deg);
+  }
+  
+  .container-login .cover-form {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    top: 0;
+    left: 47%;
+    z-index: 80;
+    transition: all 1s ease;
+    transform-origin: left;
+    transform-style: preserve-3d;
+  }
+  
+  .container-login .cover-form .front img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    z-index: 12;
+    backface-visibility: hidden;
+    left: 30px;
+  }
+  
+  .container-login .cover-form .text {
+    position: absolute;
+    z-index: 111;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  
+  .cover-form .text .text-1,
+  .cover-form .text .text-2 {
+    font-size: 26px;
+    font-family: 600;
+    text-align: center;
+    backface-visibility: hidden;
+  }
+  
+  .cover-form .text .text-2 {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  
+  .container-login .cover-form::before {
+    content: "";
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    /* background-color: var(--main-color); */
+    opacity: 0.5;
+    z-index: 100;
+    transform: rotateY(180deg);
+  }
+  
+  .container-login form {
+    height: 100%;
+    width: 100%;
+    background-color: white;
+  }
+  
+  .container-login .form-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 50px;
+  }
+  
+  .form-content .login-form,
+  .form-content .signUp-form {
+    width: calc(50% - 25px);
+  }
+  
+  form .form-content .title {
+    position: relative;
+    font-size: 37px;
+    font-weight: 600;
+    color: var(--main-color);
+    margin-bottom: 20px;
+  }
+  
+  form .form-content .title::before {
+    content: "";
+    position: absolute;
+    /* left: 0;
+    bottom: 0; */
+    bottom: 0;
+    height: 3px;
+    width: 25px;
+    background-color: var(--main-color);
+  }
+  
+  form .signUp-form .title::before {
+    width: 20px;
+  }
+  
+  /* form .form-content .input-boxes {
+    margin-top: 10px;
+    padding-bottom: 400px;
+  } */
+  .inputss{
+    padding-bottom: 50px;
+  }
+  form .form-content .input-box {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    position: relative;
+  }
+  
+  .form-content .input-box input {
+    height: 100%;
+    width: calc(100% - 40px);
+    outline: none;
+    border: none;
+    padding: 0 30px;
+    font-size: 17px;
+    font-weight: 500;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .form-content .input-box input:focus,
+  .form-content .input-box input:valid {
+    border-color: var(--main-color);
+  }
+  
+  .form-content .input-box i {
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--main-color);
+    font-size: 20px;
+  }
+  
+  form .form-content .input-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    padding-bottom: 30px;
+  }
+  
+  form .form-content .input-text a {
+    color: var(--main-color);
+    text-decoration: none;
+  }
+  
+  form .form-content .input-text a:hover {
+    text-decoration: underline;
+  }
+  
+  
+
+  .form-content .input-text-2 {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  form .form-content label {
+    color: var(--main-color);
+    cursor: pointer;
+  }
+  
+  form .form-content label:hover {
+    text-decoration: underline;
+  }
+  
+  .container-login #flip {
+    display: none;
+  }
+  
+  @media (max-width: 730px) {
+    .container-login .cover-form {
+      display: none;
+    }
+  
+    .form-content .login-form,
+    .form-content .signUp-form {
+      width: 100%;
+    }
+  
+    .form-content .signUp-form {
+      display: none;
+    }
+  
+    .container-login #flip:checked ~ form .signUp-form {
+      display: block;
+    }
+  
+    .container-login #flip:checked ~ form .login-form {
+      display: none;
+    }
+  }
+  

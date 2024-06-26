@@ -1,0 +1,77 @@
+.sendMail {
+    padding-top: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.sendmail-container {
+    padding: 20px 40px;
+    max-width: 600px; /* Adjust width if needed */
+    width: 100%;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.sendmail-container h1 {
+    margin-bottom: 20px;
+    color: #358D48;
+    font-size: 28px;
+}
+
+.formSendMail {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.form-group .form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    background-color: #e9ecef; /* Light grey background */
+    color: #495057;
+}
+
+.error-message {
+    color: red;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+.mt-3 {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.mt-3 .btn {
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #358D48;
+    background-color: #358D48;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.mt-3 .btn:hover {
+    background-color: #ffffff;
+    color: #358D48;
+}

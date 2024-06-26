@@ -1,0 +1,91 @@
+.sidebar {
+  width: 250px;
+  height: 100vh; 
+  position: fixed; 
+  top: 80px;
+  left: 0;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(-100%);
+  background-color: var(--backColor1);
+  z-index: 1000; 
+}
+.sidebar.visible {
+  transform: translateX(0);
+}
+/* .nav-item {
+  padding-top: 10px;
+} */
+
+.sidebar-profile {
+  text-align: left;
+  font-size: 25px;
+  /* padding: 15px; */
+}
+
+.sidebar-menu-title {
+  padding-left: 5px;
+  font-size: 20px;
+  text-align: left;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  padding-left: 5px;
+}
+
+.menu-arrow {
+  color: black;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  color: #000; 
+  text-decoration: none;
+  gap: 10px;
+  font-size: 18px;
+  padding: 10px 15px;
+  margin: 0;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* .nav-link i,
+.nav-link {
+  font-size: 18px;
+} */
+
+.arow {
+  font-size: 15px;
+  font-weight: 500;
+}
+.nav-email{
+  display: flex;
+  gap: 6px;
+}
+/* .nav-email span{
+  padding-left: -30px;
+} */
+.sidebar.sidebar-offcanvas {
+  width: 0;
+  overflow: hidden;
+  transition: width 0.3s ease-in-out;
+}
+
+.sidebar.sidebar-offcanvas .nav {
+  display: none;
+}
+.Sendmaill{
+  text-decoration: none;
+  color: #000;
+}
+.nav-item-inside{
+  padding-left: 20px;
+}

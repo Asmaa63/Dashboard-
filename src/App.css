@@ -1,0 +1,33 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Playwrite+US+Modern:wght@100..400&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Playwrite+US+Modern:wght@100..400&display=swap');
+:root{
+  --mainDashColor:#e1dddd;
+  --MainTextColor:#358D48;
+  --canColor1:#cbccb4;
+  --backColor1:#f8f9fa;
+}
+.App {
+  text-align: center;
+  width: 100%;
+  /* font-family: "Playwrite US Modern", cursive;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  text-transform:none; */
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-style: italic;
+  background-color: #fefefc;
+}
+
+
+
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

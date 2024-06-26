@@ -1,0 +1,20 @@
+/* src/components/Layout.css */
+.container-scroller {
+  width: 100%;
+  margin: 0; /* تأكد من عدم وجود Margin */
+}
+
+.container-fluid.page-body-wrapper {
+  display: flex;
+  width: 100%;
+  margin: 0; /* تأكد من عدم وجود Margin */
+  padding: 0; /* تأكد من عدم وجود Padding */
+}
+
+.sidebar {
+  flex-shrink: 0; /* منع الشريط الجانبي من التقلص */
+}
+
+.main-content {
+  flex-grow: 1; /* اجعل المحتوى الرئيسي يأخذ المتبقي */
+}

@@ -1,0 +1,67 @@
+.editUser{
+    padding-top: 115px;
+}
+.edit-container {
+    padding: 20px 80px 20px 80px ;
+    max-width: 400px;
+    margin: auto;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.edit-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #358D48;
+    font-size: 35px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+.editUser .formUdit{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.form-group label {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.form-group .form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+}
+
+.form-group .error {
+    color: red;
+    margin-top: 5px;
+}
+
+.mt-3 {
+    margin-top: 20px;
+    text-align: center;
+}
+.mt-3 .btn{
+    padding: 10px 80px;
+    border-radius: 5px;
+    border: 1px solid #358D48;
+    background-color: #358D48;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+}
+.mt-3 .btn:hover{
+    background-color: #ffffff;
+    color: #358D48;
+}
+.editUser .form-group select{
+    width: 100%;
+}

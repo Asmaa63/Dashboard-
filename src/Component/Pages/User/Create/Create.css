@@ -1,0 +1,112 @@
+.createUser {
+    padding-top: 105px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.create-container {
+    padding: 0px 40px 20px;
+    max-width: 600px; /* Adjust width if needed */
+    width: 100%;
+    background-color: var(--backColor1);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.create-container h1 {
+    margin-bottom: 20px;
+    color: #358D48;
+    font-size: 28px;
+}
+
+.formCreate {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.input-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px; /* Space between input groups */
+    margin-bottom: 15px;
+}
+
+.form-group {
+    flex: 1; /* Take equal space */
+    text-align: left;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.form-group .form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    background-color: #e9ecef; /* Light grey background */
+    color: #495057;
+}
+
+.error-message {
+    color: red;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+.mt-3 {
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.mt-3 .btn {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #358D48;
+    background-color: #358D48;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.mt-3 .btn:hover {
+    background-color: #ffffff;
+    color: #358D48;
+}
+
+.file-upload {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    cursor: pointer;
+    background-color: #e9ecef;
+    color: rgb(111, 107, 107);
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin-top: 5px;
+    font-size: 16px;
+    border: 1px solid #ced4da;
+}
+
+.file-upload input[type='file'] {
+    position: absolute;
+    font-size: 100px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload .button {
+    font-size: 16px;
+    cursor: pointer;
+}
