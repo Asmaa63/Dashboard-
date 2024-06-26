@@ -7,20 +7,34 @@ const List = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        // Load mock users initially
-        fetchMockUsers();
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const { token } = JSON.parse(storedUser);
+            fetchUsers(token, 1); // Fetch users on component mount with page number 1
+        }
     }, []);
 
-    const fetchMockUsers = () => {
-        // Mock data
-        const mockUsers = [
-            { id: 14666666666666666666, displayName: 'asmaa', email: 'asmaa@example.com', role: 'Admin', avatar: 'fa-solid fa-user' },
-            { id: 2, displayName: 'afnan', email: 'afnan@example.com', role: 'User', avatar: 'fa-solid fa-user' },
-            { id: 3, displayName: 'Aly', email: 'aly@example.com', role: 'User', avatar: 'fa-solid fa-user' },
-            { id: 4, displayName: 'ali', email: 'ali@example.com', role: 'Moderator', avatar: 'fa-solid fa-user' },
-            // Add more mock users as needed
-        ];
-        setUsers(mockUsers);
+    const fetchUsers = async (token, pageNumber) => {
+        try {
+            const url = `http://plantify.runasp.net/api/Dashboard/get-all-user-list?pageNumber=${pageNumber}`;
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch users');
+            }
+
+            const data = await response.json();
+            setUsers(data);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
     };
 
     const handleSearchChange = (e) => {
@@ -30,16 +44,18 @@ const List = () => {
     const handleSearchSubmit = (e) => {
         e.preventDefault();
 
-        // If search query is empty, fetch all users
         if (searchQuery.trim() === '') {
-            fetchMockUsers();
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                const { token } = JSON.parse(storedUser);
+                fetchUsers(token, 1); // Fetch all users if search query is empty
+            }
         } else {
-            // Filter mock data based on search query
-            setUsers((prevUsers) =>
-                prevUsers.filter(user =>
-                    user.displayName.toLowerCase().includes(searchQuery.toLowerCase())
-                )
+            // Filter users based on search query
+            const filteredUsers = users.filter(user =>
+                user.displayName.toLowerCase().includes(searchQuery.toLowerCase())
             );
+            setUsers(filteredUsers);
         }
     };
 
@@ -77,19 +93,22 @@ const List = () => {
                                 <td style={{ color: 'rgb(111, 107, 107)' }}>{user.id}</td>
                                 <td style={{ textAlign: 'center' }}>
                                     <div className="avatar-container">
-                                        <i className={`fa-fw ${user.avatar}`} />
+                                        {user.image_name ? (
+                                            <img src={user.image_name} alt={user.displayName} className="avatar-image" />
+                                        ) : (
+                                            <i className={`fa-fw ${user.avatar}`} />
+                                        )}
                                     </div>
                                 </td>
                                 <td style={{ color: 'rgb(111, 107, 107)' }}>{user.displayName}</td>
                                 <td style={{ color: 'rgb(111, 107, 107)' }}>{user.email}</td>
                                 <td style={{ color: 'rgb(111, 107, 107)' }}>{user.role}</td>
                                 <td>
-                                    {/* Mock action button */}
                                     <div className="action-buttons">
-                                        <Link className='action-edit btn btn-primary' to="/EditUser">
+                                        <Link className='action-edit btn btn-primary' to={`/EditUser/${user.id}`}>
                                             <i className="fa-solid fa-pen-to-square"></i>
                                         </Link>
-                                        <Link to="/DeleteUser" className='action-delete btn btn-danger'>
+                                        <Link to={`/DeleteUser/${user.id}`} className='action-delete btn btn-danger'>
                                             <i className="fa-regular fa-trash-can"></i>
                                         </Link>
                                     </div>
@@ -99,7 +118,7 @@ const List = () => {
                     </tbody>
                 </table>
             ) : (
-                <h2 className="mt-5 alert alert-warning">There is Not Any User</h2>
+                <h2 className="mt-5 alert alert-warning">No users found</h2>
             )}
         </div>
     );

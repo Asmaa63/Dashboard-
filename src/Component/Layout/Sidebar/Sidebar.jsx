@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Sidebar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers, faUserTie, faEnvelopeOpenText, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
@@ -7,6 +7,15 @@ import { Link } from 'react-router-dom';
 const Sidebar = ({ isVisible }) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    // Load user info from localStorage
+    const userInfo = localStorage.getItem('user');
+    if (userInfo) {
+      setUser(JSON.parse(userInfo));
+    }
+  }, []);
 
   const toggleUserMenu = () => setIsUserMenuOpen(!isUserMenuOpen);
   const toggleAdminMenu = () => setIsAdminMenuOpen(!isAdminMenuOpen);
@@ -16,7 +25,7 @@ const Sidebar = ({ isVisible }) => {
       <ul className="nav">
         <li className="nav-item">
           <div className="sidebar-profile">
-            <p className="sidebar-designation">Welcome, User</p>
+            <p className="sidebar-designation">Welcome, {user.displayName}</p>
           </div>
         </li>
         <li className="sidebar-dash">
@@ -32,10 +41,10 @@ const Sidebar = ({ isVisible }) => {
                 <div className="collapse show" id="auth">
                   <ul className="nav flex-column sub-menu nav-item-inside">
                     <li className="nav-item">
-                      <Link className="nav-link" to="/UserList">User List</Link>
+                      <Link className="nav-link" to="UserList">User List</Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/CreateUser">Create User</Link>
+                      <Link className="nav-link" to="CreateUser">Create User</Link>
                     </li>
                   </ul>
                 </div>
@@ -52,10 +61,10 @@ const Sidebar = ({ isVisible }) => {
                 <div className="collapse show" id="auth">
                   <ul className="nav flex-column sub-menu nav-item-inside">
                     <li className="nav-item">
-                      <Link className="nav-link" to="/ListAdmin">Admin List</Link>
+                      <Link className="nav-link" to="ListAdmin">Admin List</Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/CreateAdmin">Create Admin</Link>
+                      <Link className="nav-link" to="CreateAdmin">Create Admin</Link>
                     </li>
                   </ul>
                 </div>
@@ -63,10 +72,10 @@ const Sidebar = ({ isVisible }) => {
             </li>
 
             <li className="nav-item">
-              <a className="nav-link nav-email" href="/SendMail">
+              <Link className="nav-link nav-email" to="SendMail">
                 <FontAwesomeIcon icon={faEnvelopeOpenText} />
                 <span className="menu-title">Send Introduction Email</span>
-              </a>
+              </Link>
             </li>
           </ul>
         </li>

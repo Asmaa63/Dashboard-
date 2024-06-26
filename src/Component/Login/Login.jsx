@@ -6,16 +6,17 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    
+
     const params = new URLSearchParams();
     params.append('email', email);
     params.append('password', password);
-    
-    console.log('Sending login parameters:', { email, password }); 
-    
+
+    console.log('Sending login parameters:', { email, password });
+
     try {
       const response = await fetch(`http://plantify.runasp.net/api/Dashboard/admin?${params.toString()}`, {
         method: 'POST',
@@ -27,15 +28,22 @@ const LoginPage = () => {
       if (!response.ok) {
         console.log('HTTP status:', response.status);
         const errorData = await response.json();
-        console.log('Error response data:', errorData); 
-        throw new Error('Network response was not ok');
+        console.log('Error response data:', errorData);
+        setError('Login failed. Please check your email and password.');
+        return;
       }
 
       const data = await response.json();
       console.log('Login successful:', data);
-      navigate('/DashboardMain');
+
+      // Store user info in localStorage
+      localStorage.setItem('user', JSON.stringify(data));
+
+      setError(null); // Reset error state
+      navigate('/DashboardMain/Home'); // تأكد من أنك تنقل إلى المسار الصحيح
     } catch (error) {
       console.error('Login failed:', error);
+      setError('An error occurred during login. Please try again.');
     }
   };
 
@@ -75,6 +83,7 @@ const LoginPage = () => {
                     />
                   </div>
                 </div>
+                {error && <div className="error-message">{error}</div>}
                 <div className="mt-3">
                   <button type="submit" className="btn btn-primary">Login</button>
                 </div>

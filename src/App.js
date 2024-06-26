@@ -8,11 +8,10 @@ import Layout from './Component/Layout/LayOut/Layout';
 function App() {
   return (
     <div className="App">
-      {/* <Routes>
-        <Route path='/' element={<LoginPage></LoginPage>} />
-        <Route path='/DashboardMain/*' element={<Layout></Layout>} />
-      </Routes> */}
-      <Layout></Layout>
+      <Routes>
+        <Route path='/' element={<LoginPage />} />
+        <Route path='/DashboardMain/*' element={<Layout />} />
+      </Routes>
     </div>
   );
 }
