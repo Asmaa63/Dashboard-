@@ -2,26 +2,23 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Create.css';
 
-const Create = ({ onCreateSuccess }) => {
+const Create = ({ onCreateSuccess, token }) => {
     const [formData, setFormData] = useState({
-        id: '',
         displayName: '',
         email: '',
         password: '',
-        avatar: null, // To store the selected file
-        role: 'user', // Default role
+        role: 'user',
+        image: null,
     });
 
     const [errors, setErrors] = useState({});
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-
-        // Handle file input separately
-        if (name === 'avatar') {
+        if (name === 'image') {
             setFormData({
                 ...formData,
-                avatar: files[0], // Assuming single file selection
+                image: files[0], // Set the image file
             });
         } else {
             setFormData({
@@ -46,18 +43,29 @@ const Create = ({ onCreateSuccess }) => {
         if (!validateForm()) return;
 
         try {
-            const formDataToSubmit = new FormData();
-            formDataToSubmit.append('id', formData.id);
-            formDataToSubmit.append('displayName', formData.displayName);
-            formDataToSubmit.append('email', formData.email);
-            formDataToSubmit.append('password', formData.password);
-            formDataToSubmit.append('avatar', formData.avatar);
-            formDataToSubmit.append('role', formData.role);
+            // Prepare the URL
+            const url = 'http://plantify.runasp.net/api/Dashboard/add-new-user';
 
-            const response = await axios.post('/api/users/create', formDataToSubmit, {
+            // Prepare request data as URL parameters
+            const params = new URLSearchParams({
+                name: formData.displayName,
+                email: formData.email,
+                password: formData.password,
+                role: formData.role,
+            });
+
+            // Prepare form data for image if it exists
+            const formDataToSubmit = new FormData();
+            if (formData.image) {
+                formDataToSubmit.append('image', formData.image);
+            }
+
+            // Send request with either FormData for image or URL parameters
+            const response = await axios.post(`${url}?${params.toString()}`, formDataToSubmit, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
             });
 
             alert('User created successfully');
@@ -73,33 +81,27 @@ const Create = ({ onCreateSuccess }) => {
             <div className="create-container">
                 <h1>Create User</h1>
                 <form onSubmit={handleSubmit} className="formCreate">
-                    <input 
-                        type="hidden" 
-                        name="id" 
-                        value={formData.id} 
-                    />
-
                     <div className="input-row">
                         <div className="form-group">
                             <label>Name</label>
-                            <input 
-                                type="text" 
-                                name="displayName" 
-                                className="form-control form-control-lg" 
-                                value={formData.displayName} 
-                                onChange={handleChange} 
+                            <input
+                                type="text"
+                                name="displayName"
+                                className="form-control form-control-lg"
+                                value={formData.displayName}
+                                onChange={handleChange}
                             />
                             {errors.displayName && <span className="error-message">{errors.displayName}</span>}
                         </div>
 
                         <div className="form-group">
                             <label>Email</label>
-                            <input 
-                                type="email" 
-                                name="email" 
-                                className="form-control form-control-lg" 
-                                value={formData.email} 
-                                onChange={handleChange} 
+                            <input
+                                type="email"
+                                name="email"
+                                className="form-control form-control-lg"
+                                value={formData.email}
+                                onChange={handleChange}
                             />
                             {errors.email && <span className="error-message">{errors.email}</span>}
                         </div>
@@ -108,26 +110,26 @@ const Create = ({ onCreateSuccess }) => {
                     <div className="input-row">
                         <div className="form-group">
                             <label>Password</label>
-                            <input 
-                                type="password" 
-                                name="password" 
-                                className="form-control form-control-lg" 
-                                value={formData.password} 
-                                onChange={handleChange} 
+                            <input
+                                type="password"
+                                name="password"
+                                className="form-control form-control-lg"
+                                value={formData.password}
+                                onChange={handleChange}
                             />
                             {errors.password && <span className="error-message">{errors.password}</span>}
                         </div>
 
                         <div className="form-group">
                             <label>Role</label>
-                            <select 
-                                name="role" 
+                            <select
+                                name="role"
                                 className="form-control form-control-lg"
-                                value={formData.role} 
+                                value={formData.role}
                                 onChange={handleChange}
                             >
                                 <option value="user">User</option>
-                                <option value="admin">Admin</option>
+                                <option value="Agricultural engineer">Agricultural engineer</option>
                             </select>
                         </div>
                     </div>
@@ -135,11 +137,11 @@ const Create = ({ onCreateSuccess }) => {
                     <div className="form-group">
                         <label>Upload Image</label>
                         <label className="file-upload">
-                            <input 
-                                type="file" 
-                                name="avatar" 
-                                accept="image/*" 
-                                onChange={handleChange} 
+                            <input
+                                type="file"
+                                name="image"
+                                accept="image/*"
+                                onChange={handleChange}
                             />
                             <span className="button">Upload Image</span>
                         </label>
