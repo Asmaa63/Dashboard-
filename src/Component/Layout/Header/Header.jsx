@@ -43,14 +43,16 @@ const Header = ({ toggleSidebar }) => {
               <span>{user.displayName}</span>
             </a>
             <ul className="dropdown-content">
-              <li className="dropdown-item">
+              {/* <li className="dropdown-item">
                 <Link to="/profile">
                   <FontAwesomeIcon icon={faAddressCard} /> <span>My Profile</span>
+                  <span>Profile</span>
                 </Link>
-              </li>
+              </li> */}
               <li className="dropdown-item">
                 <a href="/logout" onClick={handleLogout}>
-                  <FontAwesomeIcon icon={faSignOutAlt} /> <span>Logout</span>
+                  {/* <FontAwesomeIcon icon={faSignOutAlt} /> <span>Logout</span> */}
+                  <span>Logout</span>
                 </a>
               </li>
             </ul>

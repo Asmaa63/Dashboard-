@@ -1,34 +1,120 @@
-// src/Pages/Home/Home.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
 import './Home.css';
 import { Chart } from 'chart.js/auto';
 
 const Home = () => {
+  const [userCounts, setUserCounts] = useState({
+    User: 0,
+    'Agricultural engineer': 0,
+    Botanist: 0,
+    Expert: 0,
+    Admin: 0,
+  });
+
+  const totalQueriesChartRef = useRef(null);
+
   useEffect(() => {
-    // Total Queries Chart
-    const ctx1 = document.getElementById('totalQueriesChart').getContext('2d');
-    new Chart(ctx1, {
-      type: 'line',
-      data: {
-        labels: Array.from({ length: 24 }, (_, i) => i + ":00"),
-        datasets: [{
-          label: 'Total Queries',
-          data: Array.from({ length: 24 }, () => Math.floor(Math.random() * 150)),
-          backgroundColor: 'rgba(0, 123, 255, 0.2)',
-          borderColor: 'rgba(0, 123, 255, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
+    const fetchData = async () => {
+      try {
+        const token = JSON.parse(localStorage.getItem('user')).token;
+
+        const response = await axios.get('http://plantify.runasp.net/api/Dashboard/get-user-counts-by-role', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.status === 200) {
+          setUserCounts(response.data);
+        } else {
+          console.error('Error fetching user counts:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching user counts:', error);
+      }
+    };
+
+    const fetchUserCountsOverTime = async (period) => {
+      try {
+        const token = JSON.parse(localStorage.getItem('user')).token;
+        const response = await axios.get(`http://plantify.runasp.net/api/Dashboard/user-counts-over-time?period=${period}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.status === 200) {
+          return response.data;
+        } else {
+          console.error(`Error fetching user counts over time for ${period}:`, response.status);
+          return {};
+        }
+      } catch (error) {
+        console.error(`Error fetching user counts over time for ${period}:`, error);
+        return {};
+      }
+    };
+
+    const loadAllData = async () => {
+      await fetchData();
+
+      const dailyData = await fetchUserCountsOverTime('daily');
+      const monthlyData = await fetchUserCountsOverTime('monthly');
+      const yearlyData = await fetchUserCountsOverTime('yearly');
+
+      const dailyLabels = Object.keys(dailyData);
+      const dailyValues = Object.values(dailyData);
+
+      const monthlyLabels = Object.keys(monthlyData);
+      const monthlyValues = Object.values(monthlyData);
+
+      const yearlyLabels = Object.keys(yearlyData);
+      const yearlyValues = Object.values(yearlyData);
+
+      const ctx = totalQueriesChartRef.current.getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [...dailyLabels, ...monthlyLabels, ...yearlyLabels],
+          datasets: [
+            {
+              label: 'Daily Users',
+              data: dailyValues,
+              backgroundColor: 'rgba(0, 123, 255, 0.2)',
+              borderColor: 'rgba(0, 123, 255, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Monthly Users',
+              data: monthlyValues,
+              backgroundColor: 'rgba(40, 167, 69, 0.2)',
+              borderColor: 'rgba(40, 167, 69, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Yearly Users',
+              data: yearlyValues,
+              backgroundColor: 'rgba(255, 193, 7, 0.2)',
+              borderColor: 'rgba(255, 193, 7, 1)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
           }
         }
-      }
-    });
+      });
+    };
 
-    // Client Activity Chart
+    loadAllData();
+
     const ctx2 = document.getElementById('clientActivityChart').getContext('2d');
     new Chart(ctx2, {
       type: 'line',
@@ -51,7 +137,6 @@ const Home = () => {
       }
     });
 
-    // Query Types Chart
     const ctx3 = document.getElementById('queryTypesChart').getContext('2d');
     new Chart(ctx3, {
       type: 'doughnut',
@@ -78,7 +163,6 @@ const Home = () => {
       }
     });
 
-    // Upstream Servers Chart
     const ctx4 = document.getElementById('upstreamServersChart').getContext('2d');
     new Chart(ctx4, {
       type: 'doughnut',
@@ -108,57 +192,53 @@ const Home = () => {
 
   return (
     <div className="home-cont">
-    <div className="home">
-      <div className="header">
-        <div>
-          <h2>Total Queries</h2>
-          <p>947</p>
+      <div className="home">
+        <div className="header">
+          <div>
+            <h2>Number of Normal Users</h2>
+            <p>{userCounts.User}</p>
+          </div>
+          <div>
+            <h2>Number of Agronomists</h2>
+            <p>{userCounts['Agricultural engineer']}</p>
+          </div>
+          <div>
+            <h2>Number of Botanists</h2>
+            <p>{userCounts.Botanist}</p>
+          </div>
+          <div>
+            <h2>Number of Experts</h2>
+            <p>{userCounts.Expert}</p>
+          </div>
+          <div>
+            <h2>Number of Admins</h2>
+            <p>{userCounts.Admin}</p>
+          </div>
         </div>
-        <div>
-          <h2>Queries Blocked</h2>
-          <p>56</p>
-        </div>
-        <div>
-          <h2>Percentage Blocked</h2>
-          <p>5.9%</p>
-        </div>
-        <div>
-          <h2>Domains on Adlists</h2>
-          <p>132,662</p>
-        </div>
-      </div>
 
-      <div className="charts">
-        <div className="chart-group">
-          <div className="chart">
-            <h3>Total queries over last 24 hours</h3>
-            <canvas id="totalQueriesChart"></canvas>
+        <div className="charts">
+          <div className="chart-group">
+            <div className="chart">
+              <h3>Number of Users Over Time</h3>
+              <canvas ref={totalQueriesChartRef}></canvas>
+            </div>
+            <div className="chart full-width">
+              <h3>Query Types</h3>
+              <canvas id="queryTypesChart"></canvas>
+            </div>
           </div>
-          <div className="chart full-width">
-            <h3>Query Types</h3>
-            <canvas id="queryTypesChart"></canvas>
-          </div>
-          {/* <div className="chart">
-            <h3>Client activity over last 24 hours</h3>
-            <canvas id="clientActivityChart"></canvas>
-          </div> */}
-        </div>
-        <div className="chart-group2">
-          {/* <div className="chart full-width">
-            <h3>Query Types</h3>
-            <canvas id="queryTypesChart"></canvas>
-          </div> */}
-          <div className="chart">
-            <h3>Client activity over last 24 hours</h3>
-            <canvas id="clientActivityChart"></canvas>
-          </div>
-          <div className="chart full-width">
-            <h3>Upstream Servers</h3>
-            <canvas id="upstreamServersChart"></canvas>
+          <div className="chart-group2">
+            <div className="chart">
+              <h3>Client Activity Over Last 24 Hours</h3>
+              <canvas id="clientActivityChart"></canvas>
+            </div>
+            <div className="chart full-width">
+              <h3>Upstream Servers</h3>
+              <canvas id="upstreamServersChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }

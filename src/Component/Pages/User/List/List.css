@@ -48,8 +48,6 @@
     background-color: #f1f1f1;
 }
 
-
-
 .action-buttons {
     display: flex;
     gap: 1px;
@@ -71,20 +69,76 @@
     background-color: #ffffff;
     color: #dc3545;
 }
-/* تعيين شكل الصورة الدائري */
-.avatar-container {
+
+.image-container {
     display: inline-block;
-    width: 32px; /* حجم الصورة */
-    height: 32px; /* حجم الصورة */
-    border-radius: 50%; /* جعل الصورة دائرية */
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     overflow: hidden;
-    background-color: #f1f1f1; /* لون الخلفية الافتراضي للصورة */
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2); /* ظل للصورة */
+    background-color: #f1f1f1;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
-.avatar-container i {
-    font-size: 20px; /* حجم الأيقونة */
-    line-height: 32px; /* لتوسيط الأيقونة داخل الصورة */
-    color: #555; /* لون الأيقونة */
+.image-container i {
+    font-size: 20px;
+    line-height: 32px;
+    color: #555;
 }
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.popup {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.popup h3{
+    font-size: 22px;
+    text-transform:capitalize;
+}
+.popup-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+.popup-buttons button{
+    background-color: var(--MainTextColor);
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 8px 15px;
+    font-size: 18px;
+    border: 1px solid var(--MainTextColor);
+    cursor: pointer;
+}
+.success-message {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding:5px 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    text-transform: capitalize;
+}
+/* .success-message p{
+    font-size: 20px;
+    text-transform: capitalize;
+} */
 

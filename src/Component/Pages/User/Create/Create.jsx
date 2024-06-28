@@ -1,24 +1,27 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Create.css';
+import { useNavigate } from 'react-router-dom';
 
-const Create = ({ onCreateSuccess, token }) => {
+const Create = ({ onCreateSuccess }) => {
     const [formData, setFormData] = useState({
         displayName: '',
         email: '',
         password: '',
-        role: 'user',
+        role: 'User',
         image: null,
     });
-
+    const [showPopup, setShowPopup] = useState(false);
+    const token = JSON.parse(localStorage.getItem('user')).token;
     const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
             setFormData({
                 ...formData,
-                image: files[0], // Set the image file
+                image: files[0],
             });
         } else {
             setFormData({
@@ -43,10 +46,7 @@ const Create = ({ onCreateSuccess, token }) => {
         if (!validateForm()) return;
 
         try {
-            // Prepare the URL
             const url = 'http://plantify.runasp.net/api/Dashboard/add-new-user';
-
-            // Prepare request data as URL parameters
             const params = new URLSearchParams({
                 name: formData.displayName,
                 email: formData.email,
@@ -54,21 +54,24 @@ const Create = ({ onCreateSuccess, token }) => {
                 role: formData.role,
             });
 
-            // Prepare form data for image if it exists
             const formDataToSubmit = new FormData();
             if (formData.image) {
                 formDataToSubmit.append('image', formData.image);
             }
 
-            // Send request with either FormData for image or URL parameters
             const response = await axios.post(`${url}?${params.toString()}`, formDataToSubmit, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
             });
 
-            alert('User created successfully');
+            setShowPopup(true);
+            setTimeout(() => {
+                setShowPopup(false);
+                navigate('/DashboardMain/UserList');
+            }, 2000);
+
             if (onCreateSuccess) onCreateSuccess(response.data);
         } catch (error) {
             console.error('Error creating user:', error);
@@ -93,7 +96,6 @@ const Create = ({ onCreateSuccess, token }) => {
                             />
                             {errors.displayName && <span className="error-message">{errors.displayName}</span>}
                         </div>
-
                         <div className="form-group">
                             <label>Email</label>
                             <input
@@ -106,7 +108,6 @@ const Create = ({ onCreateSuccess, token }) => {
                             {errors.email && <span className="error-message">{errors.email}</span>}
                         </div>
                     </div>
-
                     <div className="input-row">
                         <div className="form-group">
                             <label>Password</label>
@@ -119,7 +120,6 @@ const Create = ({ onCreateSuccess, token }) => {
                             />
                             {errors.password && <span className="error-message">{errors.password}</span>}
                         </div>
-
                         <div className="form-group">
                             <label>Role</label>
                             <select
@@ -130,10 +130,11 @@ const Create = ({ onCreateSuccess, token }) => {
                             >
                                 <option value="user">User</option>
                                 <option value="Agricultural engineer">Agricultural engineer</option>
+                                <option value="BOTANIST">BOTANIST</option>
+                                <option value="EXPERT">EXPERT</option>
                             </select>
                         </div>
                     </div>
-
                     <div className="form-group">
                         <label>Upload Image</label>
                         <label className="file-upload">
@@ -146,11 +147,11 @@ const Create = ({ onCreateSuccess, token }) => {
                             <span className="button">Upload Image</span>
                         </label>
                     </div>
-
                     <div className="mt-3">
                         <button type="submit" className="btn btn-primary">Create</button>
                     </div>
                 </form>
+                {showPopup && <div className="popup-message">User created successfully!</div>}
             </div>
         </div>
     );

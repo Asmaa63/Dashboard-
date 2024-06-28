@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import '../../User/Create/Create.css';
+import { useNavigate } from 'react-router-dom';
 
 const CreateAdmin = ({ onCreateSuccess }) => {
     const [formData, setFormData] = useState({
-        id: '',
         displayName: '',
         email: '',
         password: '',
-        avatar: null, // To store the selected file
-        role: 'user', // Default role
+        image: null,
     });
-
+    const [showPopup, setShowPopup] = useState(false);
+    const token = JSON.parse(localStorage.getItem('user')).token;
     const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-
-        // Handle file input separately
-        if (name === 'avatar') {
+        if (name === 'image') {
             setFormData({
                 ...formData,
-                avatar: files[0], // Assuming single file selection
+                image: files[0],
             });
         } else {
             setFormData({
@@ -45,25 +45,35 @@ const CreateAdmin = ({ onCreateSuccess }) => {
         if (!validateForm()) return;
 
         try {
-            const formDataToSubmit = new FormData();
-            formDataToSubmit.append('id', formData.id);
-            formDataToSubmit.append('displayName', formData.displayName);
-            formDataToSubmit.append('email', formData.email);
-            formDataToSubmit.append('password', formData.password);
-            formDataToSubmit.append('avatar', formData.avatar);
-            formDataToSubmit.append('role', formData.role);
+            const url = 'http://plantify.runasp.net/api/Dashboard/create-admin';
+            const params = new URLSearchParams({
+                name: formData.displayName,
+                email: formData.email,
+                password: formData.password,
+            });
 
-            const response = await axios.post('/api/users/create', formDataToSubmit, {
+            const formDataToSubmit = new FormData();
+            if (formData.image) {
+                formDataToSubmit.append('image', formData.image);
+            }
+
+            const response = await axios.post(`${url}?${params.toString()}`, formDataToSubmit, {
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            alert('User created successfully');
+            setShowPopup(true);
+            setTimeout(() => {
+                setShowPopup(false);
+                navigate('/DashboardMain/ListAdmin', { state: { showPopup: true } });
+            }, 2000);
+
             if (onCreateSuccess) onCreateSuccess(response.data);
         } catch (error) {
-            console.error('Error creating user:', error);
-            alert('Failed to create user');
+            console.error('Error creating admin:', error);
+            alert('Failed to create admin');
         }
     };
 
@@ -72,33 +82,27 @@ const CreateAdmin = ({ onCreateSuccess }) => {
             <div className="create-container">
                 <h1>Create Admin</h1>
                 <form onSubmit={handleSubmit} className="formCreate">
-                    <input 
-                        type="hidden" 
-                        name="id" 
-                        value={formData.id} 
-                    />
-
                     <div className="input-row">
                         <div className="form-group">
                             <label>Name</label>
-                            <input 
-                                type="text" 
-                                name="displayName" 
-                                className="form-control form-control-lg" 
-                                value={formData.displayName} 
-                                onChange={handleChange} 
+                            <input
+                                type="text"
+                                name="displayName"
+                                className="form-control form-control-lg"
+                                value={formData.displayName}
+                                onChange={handleChange}
                             />
                             {errors.displayName && <span className="error-message">{errors.displayName}</span>}
                         </div>
 
                         <div className="form-group">
                             <label>Email</label>
-                            <input 
-                                type="email" 
-                                name="email" 
-                                className="form-control form-control-lg" 
-                                value={formData.email} 
-                                onChange={handleChange} 
+                            <input
+                                type="email"
+                                name="email"
+                                className="form-control form-control-lg"
+                                value={formData.email}
+                                onChange={handleChange}
                             />
                             {errors.email && <span className="error-message">{errors.email}</span>}
                         </div>
@@ -107,26 +111,25 @@ const CreateAdmin = ({ onCreateSuccess }) => {
                     <div className="input-row">
                         <div className="form-group">
                             <label>Password</label>
-                            <input 
-                                type="password" 
-                                name="password" 
-                                className="form-control form-control-lg" 
-                                value={formData.password} 
-                                onChange={handleChange} 
+                            <input
+                                type="password"
+                                name="password"
+                                className="form-control form-control-lg"
+                                value={formData.password}
+                                onChange={handleChange}
                             />
                             {errors.password && <span className="error-message">{errors.password}</span>}
                         </div>
-
                     </div>
 
                     <div className="form-group">
                         <label>Upload Image</label>
                         <label className="file-upload">
-                            <input 
-                                type="file" 
-                                name="avatar" 
-                                accept="image/*" 
-                                onChange={handleChange} 
+                            <input
+                                type="file"
+                                name="image"
+                                accept="image/*"
+                                onChange={handleChange}
                             />
                             <span className="button">Upload Image</span>
                         </label>
@@ -136,6 +139,7 @@ const CreateAdmin = ({ onCreateSuccess }) => {
                         <button type="submit" className="btn btn-primary">Create</button>
                     </div>
                 </form>
+                {showPopup && <div className="popup-message">Admin created successfully!</div>}
             </div>
         </div>
     );

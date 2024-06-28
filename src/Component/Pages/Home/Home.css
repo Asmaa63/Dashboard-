@@ -34,11 +34,14 @@
     padding: 10px;
     border-radius: 5px;
 }
-
+.header h2{
+    text-transform: capitalize;
+}
 .header div:nth-child(1) { background-color: #487835; }
 .header div:nth-child(2) { background-color: #358D48; }
 .header div:nth-child(3) { background-color: #6b8d4e; }
 .header div:nth-child(4) { background-color: #8ea26b; }
+.header div:nth-child(5) { background-color: #89aa4f; }
 
 .charts {
     display: flex;

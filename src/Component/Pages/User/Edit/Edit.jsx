@@ -1,123 +1,150 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Edit.css';
-import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-const Edit = ({ userId }) => {
-    const [user, setUser] = useState({
+const Edit = () => {
+    const { userId } = useParams(); // Get userId from URL parameter
+    const [formData, setFormData] = useState({
+        id: '',
         displayName: '',
         email: '',
-        role: 'User', // Set default role if needed
-        avatar: null, // To store the selected file
+        password: '',
+        role: 'user',
+        image: null,
     });
-
+    const [loading, setLoading] = useState(true);
+    const token = JSON.parse(localStorage.getItem('user'))?.token;
     const [errors, setErrors] = useState({});
 
-    const roles = ['User', 'Admin', 'Moderator']; // Add more roles as needed
-
     useEffect(() => {
-        // Load user details when component mounts
-        fetchUser();
-    }, []);
+        if (userId) {
+            fetchUser(userId);
+        }
+    }, [userId]);
 
-    const fetchUser = async () => {
+    const fetchUser = async (userId) => {
         try {
-            // Replace with your API call to fetch user details
-            const response = await axios.get(`/api/users/${userId}`);
-            setUser(response.data);
+            const response = await axios.get(`http://plantify.runasp.net/api/Dashboard/get-user-details?id=${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            setFormData(response.data);
+            setLoading(false);
         } catch (error) {
             console.error('Error fetching user details:', error);
+            setLoading(false);
         }
     };
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-
-        // Handle file input separately
-        if (name === 'avatar') {
-            setUser({
-                ...user,
-                avatar: files[0], // Assuming single file selection
+        if (name === 'image') {
+            setFormData({
+                ...formData,
+                image: files[0], // Set the image file
             });
         } else {
-            setUser({
-                ...user,
+            setFormData({
+                ...formData,
                 [name]: value,
             });
         }
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.displayName) newErrors.displayName = 'Display Name is required';
+        if (!formData.email) newErrors.email = 'Email is required';
+        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email address is invalid';
+        if (!formData.password) newErrors.password = 'Password is required';
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const formDataToSubmit = new FormData();
-            formDataToSubmit.append('displayName', user.displayName);
-            formDataToSubmit.append('email', user.email);
-            formDataToSubmit.append('role', user.role);
-            formDataToSubmit.append('avatar', user.avatar); // Append the avatar file
+        console.log("Form submitted"); // Check if this logs in the console
+        if (!validateForm()) return;
 
-            // Replace with your API call to update user details
-            await axios.post('/api/users/update', formDataToSubmit, {
+        try {
+            const url = "http://plantify.runasp.net/api/Dashboard/update-user";
+            const params = new URLSearchParams({
+                id: formData.id,
+                role: formData.role,
+                name: formData.displayName,
+                email: formData.email,
+            });
+
+            // Prepare form data for image if it exists
+            const formDataToSubmit = new FormData();
+            if (formData.image) {
+                formDataToSubmit.append('image', formData.image);
+            }
+
+            const response = await axios.put(`${url}?${params.toString()}`, formDataToSubmit, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
             });
 
             alert('User updated successfully');
         } catch (error) {
             console.error('Error updating user:', error);
-            if (error.response && error.response.data) {
-                setErrors(error.response.data.errors || {});
-            }
+            alert('Failed to update user');
         }
     };
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div className='editUser'>
             <div className="edit-container">
                 <h1>Update User</h1>
-                <form onSubmit={handleSubmit} className='formUdit '>
+                <form onSubmit={handleSubmit} className='edit-form'>
                     <div className="form-group">
                         <label>Name</label>
                         <input 
                             type="text" 
                             name="displayName" 
                             className="form-control form-control-lg" 
-                            value={user.displayName} 
+                            value={formData.displayName} 
                             onChange={handleChange} 
                         />
                         {errors.displayName && <span className="error">{errors.displayName}</span>}
                     </div>
 
                     <div className="input-row">
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            className="form-control form-control-lg" 
-                            value={user.email} 
-                            onChange={handleChange} 
-                        />
-                        {errors.email && <span className="error">{errors.email}</span>}
-                    </div>
+                        <div className="form-group">
+                            <label>Email</label>
+                            <input 
+                                type="email" 
+                                name="email" 
+                                className="form-control form-control-lg" 
+                                value={formData.email} 
+                                onChange={handleChange} 
+                            />
+                            {errors.email && <span className="error">{errors.email}</span>}
+                        </div>
 
-                    <div className="form-group">
-                        <label>Role</label>
-                        <select 
-                            name="role" 
-                            className="form-control form-control-lg" 
-                            value={user.role} 
-                            onChange={handleChange}
-                        >
-                            {roles.map((role) => (
-                                <option key={role} value={role}>
-                                    {role}
-                                </option>
-                            ))}
-                        </select>
-                        {errors.role && <span className="error">{errors.role}</span>}
-                    </div>
+                        <div className="form-group">
+                            <label>Role</label>
+                            <select 
+                                name="role" 
+                                className="form-control form-control-lg" 
+                                value={formData.role} 
+                                onChange={handleChange}
+                            >
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            {errors.role && <span className="error">{errors.role}</span>}
+                        </div>
                     </div>
                     
                     <div className="form-group">
@@ -125,7 +152,7 @@ const Edit = ({ userId }) => {
                         <label className="file-upload">
                             <input 
                                 type="file" 
-                                name="avatar" 
+                                name="image" 
                                 accept="image/*" 
                                 onChange={handleChange} 
                             />
