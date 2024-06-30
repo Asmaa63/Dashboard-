@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import imageCompression from 'browser-image-compression';
 import '../../User/Create/Create.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,19 +10,35 @@ const CreateAdmin = ({ onCreateSuccess }) => {
         email: '',
         password: '',
         image: null,
+        imageUploading: false, // New state for uploading indication
     });
     const [showPopup, setShowPopup] = useState(false);
     const token = JSON.parse(localStorage.getItem('user')).token;
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
+    const handleChange = async (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
             setFormData({
                 ...formData,
                 image: files[0],
+                imageUploading: true, // Start uploading
             });
+            try {
+                const compressedImage = await imageCompression(files[0], { maxSizeMB: 1 });
+                setFormData({
+                    ...formData,
+                    image: compressedImage,
+                    imageUploading: false, // Finished uploading
+                });
+            } catch (error) {
+                console.error('Error compressing image:', error);
+                setFormData({
+                    ...formData,
+                    imageUploading: false, // Error during upload
+                });
+            }
         } else {
             setFormData({
                 ...formData,
@@ -54,7 +71,8 @@ const CreateAdmin = ({ onCreateSuccess }) => {
 
             const formDataToSubmit = new FormData();
             if (formData.image) {
-                formDataToSubmit.append('image', formData.image);
+                const compressedImage = await imageCompression(formData.image, { maxSizeMB: 1 });
+                formDataToSubmit.append('image', compressedImage);
             }
 
             const response = await axios.post(`${url}?${params.toString()}`, formDataToSubmit, {
@@ -124,19 +142,24 @@ const CreateAdmin = ({ onCreateSuccess }) => {
 
                     <div className="form-group">
                         <label>Upload Image</label>
-                        <label className="file-upload">
+                        <label className={`file-upload ${formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}`}>
                             <input
                                 type="file"
                                 name="image"
                                 accept="image/*"
                                 onChange={handleChange}
+                                className={formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}
                             />
-                            <span className="button">Upload Image</span>
+                            <span className={`button ${formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}`}>
+                                {formData.imageUploading ? 'Uploading...' : formData.image ? 'Uploaded' : 'Upload Image'}
+                            </span>
                         </label>
                     </div>
 
                     <div className="mt-3">
-                        <button type="submit" className="btn btn-primary">Create</button>
+                        <button type="submit" className="btn btn-primary" disabled={formData.imageUploading}>
+                            {formData.imageUploading ? 'Creating...' : 'Create'}
+                        </button>
                     </div>
                 </form>
                 {showPopup && <div className="popup-message">Admin created successfully!</div>}

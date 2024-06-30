@@ -72,9 +72,9 @@ const Sidebar = ({ isVisible }) => {
             </li>
 
             <li className="nav-item">
-              <Link className="nav-link nav-email" to="SendMail">
+              <Link className="nav-link nav-email" to="Message">
                 <FontAwesomeIcon icon={faEnvelopeOpenText} />
-                <span className="menu-title">Send Introduction Email</span>
+                <span className="menu-title">Complaints</span>
               </Link>
             </li>
           </ul>

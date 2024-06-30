@@ -123,3 +123,34 @@
     z-index: 1000;
     font-size: 16px;
 }
+
+.file-upload input[type="file"].uploading {
+    border: 2px solid rgb(227, 177, 84);
+}
+
+.file-upload input[type="file"].uploaded {
+    border: 2px solid #358D48;
+}
+
+.file-upload input[type="file"] {
+    display: none;
+}
+
+.file-upload .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #6dadf1;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 90%;
+}
+
+.file-upload .button.uploading {
+    background-color: rgb(227, 177, 84);
+}
+
+.file-upload .button.uploaded {
+    background-color: #358D48;
+}
+

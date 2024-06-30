@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Edit.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import imageCompression from 'browser-image-compression';
 
 const Edit = () => {
     const { userId } = useParams(); // Get userId from URL parameter
@@ -10,12 +11,32 @@ const Edit = () => {
         displayName: '',
         email: '',
         password: '',
-        role: 'user',
+        role: 'User',
         image: null,
+        imageUploading: false, // Add imageUploading state
     });
     const [loading, setLoading] = useState(true);
     const token = JSON.parse(localStorage.getItem('user'))?.token;
     const [errors, setErrors] = useState({});
+    const [showNotification, setShowNotification] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
+    const navigate = useNavigate(); // Initialize useNavigate
+
+    const showSuccessNotification = () => {
+        setNotificationMessage('User updated successfully');
+        setShowNotification(true);
+        setTimeout(() => {
+            setShowNotification(false);
+        }, 3000); // Hide after 3 seconds
+    };
+
+    const showFailureNotification = () => {
+        setNotificationMessage('Failed to update user');
+        setShowNotification(true);
+        setTimeout(() => {
+            setShowNotification(false);
+        }, 3000); // Hide after 3 seconds
+    };
 
     useEffect(() => {
         if (userId) {
@@ -30,7 +51,6 @@ const Edit = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-
             setFormData(response.data);
             setLoading(false);
         } catch (error) {
@@ -39,13 +59,29 @@ const Edit = () => {
         }
     };
 
-    const handleChange = (e) => {
+    const handleChange = async (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
             setFormData({
                 ...formData,
                 image: files[0], // Set the image file
+                imageUploading: true, // Start uploading state
             });
+
+            try {
+                const compressedImage = await imageCompression(files[0], { maxSizeMB: 1 });
+                setFormData({
+                    ...formData,
+                    image: compressedImage,
+                    imageUploading: false, // Upload complete
+                });
+            } catch (error) {
+                console.error('Error compressing image:', error);
+                setFormData({
+                    ...formData,
+                    imageUploading: false, // Upload failed
+                });
+            }
         } else {
             setFormData({
                 ...formData,
@@ -59,14 +95,12 @@ const Edit = () => {
         if (!formData.displayName) newErrors.displayName = 'Display Name is required';
         if (!formData.email) newErrors.email = 'Email is required';
         else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email address is invalid';
-        if (!formData.password) newErrors.password = 'Password is required';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form submitted"); // Check if this logs in the console
         if (!validateForm()) return;
 
         try {
@@ -84,17 +118,20 @@ const Edit = () => {
                 formDataToSubmit.append('image', formData.image);
             }
 
-            const response = await axios.put(`${url}?${params.toString()}`, formDataToSubmit, {
+            await axios.put(`${url}?${params.toString()}`, formDataToSubmit, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
                 }
             });
 
-            alert('User updated successfully');
+            showSuccessNotification(); // Show success notification
+            setTimeout(() => {
+                navigate('/DashboardMain/UserList'); // Navigate to the specified path
+            }, 2000);
         } catch (error) {
             console.error('Error updating user:', error);
-            alert('Failed to update user');
+            showFailureNotification();
         }
     };
 
@@ -140,8 +177,10 @@ const Edit = () => {
                                 value={formData.role} 
                                 onChange={handleChange}
                             >
-                                <option value="user">User</option>
-                                <option value="admin">Admin</option>
+                                <option value="User">User</option>
+                                <option value="Agricultural engineer">Agricultural engineer</option>
+                                <option value="Botanist">Botanist</option>
+                                <option value="Expert">Expert</option>
                             </select>
                             {errors.role && <span className="error">{errors.role}</span>}
                         </div>
@@ -149,22 +188,32 @@ const Edit = () => {
                     
                     <div className="form-group">
                         <label>Upload Image</label>
-                        <label className="file-upload">
-                            <input 
-                                type="file" 
-                                name="image" 
-                                accept="image/*" 
-                                onChange={handleChange} 
+                        <label className={`file-upload ${formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}`}>
+                            <input
+                                type="file"
+                                name="image"
+                                accept="image/*"
+                                onChange={handleChange}
+                                className={formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}
                             />
-                            <span className="button">Upload Image</span>
+                            <span className={`button ${formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}`}>
+                                {formData.imageUploading ? 'Uploading...' : formData.image ? 'Uploaded' : 'Upload Image'}
+                            </span>
                         </label>
                     </div>
 
                     <div className="mt-3">
-                        <button type="submit" className="btn btn-primary">Update</button>
+                        <button type="submit" className="btn btn-primary" disabled={formData.imageUploading}>
+                            Update
+                        </button>
                     </div>
                 </form>
             </div>
+            {showNotification && (
+                <div className={`notification ${notificationMessage.includes('successfully') ? 'success' : 'error'}`}>
+                    {notificationMessage}
+                </div>
+            )}
         </div>
     );
 };

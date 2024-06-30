@@ -10,8 +10,12 @@ import SendMail from '../../Pages/SendMail/SendMail';
 import ListAdmin from '../../Pages/Admin/ListAdmin/ListAdmin';
 import UpdateAdmin from '../../Pages/Admin/UpdateAdmin/UpdateAdmin';
 import CreateAdmin from '../../Pages/Admin/Create/CreateAdmin';
-import Circle from '../../../Circle';
-import EarthC from '../../../Circle';
+import Message from '../../Pages/SendMail/Message/Message';
+import EditAdmin from '../../Pages/Admin/UpdateAdmin/UpdateAdmin';
+import SearchComponent from '../../Pages/User/Search/Search';
+import Circle from '../../Pages/Earth/Circle';
+import OptionImg from '../../Pages/OptionImage/OptionImage';
+import OptionImage from '../../Pages/OptionImage/OptionImage';
 
 const Main = ({ isSidebarVisible }) => {
   const handleSendSuccess = (response) => {
@@ -27,11 +31,11 @@ const Main = ({ isSidebarVisible }) => {
           <Route path='EditUser/:userId' element={<EditUser />} />
           <Route path='DeleteUser' element={<Delete />} />
           <Route path='CreateUser' element={<Create />} />
-          <Route path='SendMail' element={<SendMail onSendSuccess={handleSendSuccess} />} />
           <Route path='ListAdmin' element={<ListAdmin />} />
-          <Route path='EditAdmin' element={<UpdateAdmin />} />
+          <Route path='EditAdmin/:userId' element={<EditAdmin />} />
           <Route path='CreateAdmin' element={<CreateAdmin />} />
-          
+          <Route path='Message' element={<Message />} />
+          <Route path='SendMail' element={<SendMail onSendSuccess={handleSendSuccess} />} />
         </Routes>
       </div>
     </div>

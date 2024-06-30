@@ -89,7 +89,7 @@ const ListAdmin = () => {
                 setShowPopup(false);
                 setAdminIdToDelete(null);
 
-                etShowSuccessMessage(true);
+                setShowSuccessMessage(true);
                 setTimeout(() => setShowSuccessMessage(false), 2000);
             } catch (error) {
                 console.error('Error deleting admin:', error);
@@ -152,7 +152,7 @@ const ListAdmin = () => {
                                 <td style={{ color: 'rgb(111, 107, 107)' }}>{admin.role}</td>
                                 <td>
                                     <div className="action-buttons">
-                                        <Link className='action-edit btn btn-primary' to={`/EditAdmin/${admin.id}`}>
+                                        <Link className='action-edit btn btn-primary' to={`/DashboardMain/EditAdmin/${admin.id}`}>
                                             <i className="fa-solid fa-pen-to-square"></i>
                                         </Link>
                                         <button 

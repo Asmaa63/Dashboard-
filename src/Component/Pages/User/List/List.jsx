@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
-import './List.css';
 import { Link } from 'react-router-dom';
+import './List.css';
 
 const List = () => {
     const [users, setUsers] = useState([]);
@@ -17,7 +16,7 @@ const List = () => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             const { token } = JSON.parse(storedUser);
-            fetchUsers(token, page); // Fetch users on component mount with page number 1
+            fetchUsers(token, page); // Fetch users on component mount
         }
     }, [page]);
 
@@ -39,7 +38,8 @@ const List = () => {
             }
 
             const data = await response.json();
-            setUsers(prevUsers => [...prevUsers, ...data]);
+            // Ensure user IDs are unique
+            setUsers(prevUsers => [...prevUsers, ...data.filter(user => !prevUsers.some(prevUser => prevUser.id === user.id))]);
         } catch (error) {
             console.error('Error fetching users:', error);
         } finally {
@@ -51,57 +51,78 @@ const List = () => {
         setSearchQuery(e.target.value);
     };
 
-    const handleSearchSubmit = (e) => {
+    const handleSearchSubmit = async (e) => {
         e.preventDefault();
-
-        if (searchQuery.trim() === '') {
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                const { token } = JSON.parse(storedUser);
-                fetchUsers(token, 1); // Fetch all users if search query is empty
-            }
-        } else {
-            // Filter users based on search query
-            const filteredUsers = users.filter(user =>
-                user.displayName.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setUsers(filteredUsers);
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const { token } = JSON.parse(storedUser);
+            setLoading(true);
+            try {
+    
+                let url;
+                if (searchQuery.trim() === '') {
+                    // Fetch all users
+                    url = `http://plantify.runasp.net/api/Dashboard/get-all-user-list?pageNumber=${page}`;
+                    setLoading(true);
+                } else {
+                    // Fetch search results
+                    url = `http://plantify.runasp.net/api/Dashboard/search-users?query=${searchQuery}&pageNumber=${page}`;
+                }
+    
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                if (!response.ok) {
+                    throw new Error(searchQuery.trim() === '' ? 'Failed to fetch all users' : 'Failed to fetch search results');
+                }
+    
+                const data = await response.json();
+                setUsers(data); // Replace the current users with either all users or search results
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            } 
         }
     };
-
+    
     const handleDeleteClick = (id) => {
         setUserIdToDelete(id);
         setShowPopup(true);
     };
 
     const confirmDeleteUser = async () => {
+        console.log('User deleted:', userIdToDelete);
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             const { token } = JSON.parse(storedUser);
             try {
                 const url = `http://plantify.runasp.net/api/Dashboard/delete-user?id=${userIdToDelete}`;
-                const response = await axios.delete(url, {
+                const response = await fetch(url, {
+                    method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
 
-                if (!response.data.success) {
-                    throw new Error('Failed to delete user');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Failed to delete user: ${errorData.message}`);
                 }
 
-                console.log('User deleted:', userIdToDelete);
-
+                // Remove the user from the local state
                 setUsers(users.filter(user => user.id !== userIdToDelete));
                 setShowPopup(false);
                 setUserIdToDelete(null);
 
                 setShowSuccessMessage(true);
                 setTimeout(() => setShowSuccessMessage(false), 3000);
-
             } catch (error) {
-                console.error('Error deleting user:', error);
+                console.error('Error deleting user:', error.message);
             }
         }
     };

@@ -1,24 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import './Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faUser, faAddressCard, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'; // Import necessary icons
-import { Link } from 'react-router-dom';
+import { faBars, faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Header = ({ toggleSidebar }) => {
   const [user, setUser] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Load user info from localStorage
     const userInfo = localStorage.getItem('user');
     if (userInfo) {
       setUser(JSON.parse(userInfo));
     }
   }, []);
 
-  const handleLogout = () => {
-    // Handle logout logic here
-    localStorage.removeItem('user'); // Example: Clear user info from localStorage
-    // Additional logout logic as needed
+  const handleLogout = async () => {
+    try {
+      const token = JSON.parse(localStorage.getItem('user'))?.token;
+      await axios.post('http://plantify.runasp.net/api/Dashboard/signout', {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      localStorage.removeItem('user'); // Clear user info from localStorage
+      navigate('/'); // Redirect to login page
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Handle error appropriately
+    }
   };
 
   return (
@@ -34,25 +46,18 @@ const Header = ({ toggleSidebar }) => {
       <div className="d-flex align-items-center">
         <ul className="nav-list">
           <li className="nav-item dropdown">
-            <a href="/logout" className="nav-link">
+            <a href="#!" className="nav-link">
               {user.image_name ? (
-                <img src={`http://yourimagepath/${user.image_name}`} alt="User" className="user-image" />
+                <img src={user.image_name} alt="User" className="user-image" />
               ) : (
                 <FontAwesomeIcon icon={faUser} className="text-primary" />
               )}
               <span>{user.displayName}</span>
             </a>
             <ul className="dropdown-content">
-              {/* <li className="dropdown-item">
-                <Link to="/profile">
-                  <FontAwesomeIcon icon={faAddressCard} /> <span>My Profile</span>
-                  <span>Profile</span>
-                </Link>
-              </li> */}
               <li className="dropdown-item">
-                <a href="/logout" onClick={handleLogout}>
-                  {/* <FontAwesomeIcon icon={faSignOutAlt} /> <span>Logout</span> */}
-                  <span>Logout</span>
+                <a href="#!" onClick={handleLogout}>
+                  <FontAwesomeIcon icon={faSignOutAlt} /> <span>Logout</span>
                 </a>
               </li>
             </ul>

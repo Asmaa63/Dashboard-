@@ -3,7 +3,7 @@
 }
 .edit-container {
     padding: 20px 80px 20px 80px ;
-    max-width: 400px;
+    max-width: 500px;
     margin: auto;
     background-color: #f8f9fa;
     border-radius: 8px;
@@ -65,3 +65,55 @@
 .editUser .form-group select{
     width: 100%;
 }
+.notification {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4caf50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    font-size: 16px;
+}
+
+.success {
+    background-color: #4caf50; /* Green */
+}
+
+.error {
+    background-color: #f44336; /* Red */
+}
+
+.file-upload input[type="file"].uploading {
+    border: 2px solid rgb(227, 177, 84);
+}
+
+.file-upload input[type="file"].uploaded {
+    border: 2px solid #358D48;
+}
+
+.file-upload input[type="file"] {
+    display: none;
+}
+
+.file-upload .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #6dadf1;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 90%;
+}
+
+.file-upload .button .uploading {
+    background-color: rgb(227, 177, 84);
+}
+
+.file-upload .button .uploaded {
+    background-color: #358D48;
+}
+

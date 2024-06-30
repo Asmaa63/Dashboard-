@@ -12,6 +12,7 @@ function App() {
         <Route path='/' element={<LoginPage />} />
         <Route path='/DashboardMain/*' element={<Layout />} />
       </Routes>
+      
     </div>
   );
 }
