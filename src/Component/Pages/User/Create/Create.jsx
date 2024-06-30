@@ -49,7 +49,6 @@ const Create = ({ onCreateSuccess }) => {
             });
         }
     };
-    
 
     const validateForm = () => {
         const newErrors = {};
@@ -79,7 +78,7 @@ const Create = ({ onCreateSuccess }) => {
             const formDataToSubmit = new FormData();
             if (formData.image) {
                 const compressedImage = await imageCompression(formData.image, { maxSizeMB: 1 });
-                formDataToSubmit.append('image', compressedImage);
+                formDataToSubmit.append('image', compressedImage, formData.image.name);
             }
 
             const response = await axios.post(`${url}?${params.toString()}`, formDataToSubmit, {
@@ -161,21 +160,20 @@ const Create = ({ onCreateSuccess }) => {
                         </div>
                     </div>
                     <div className="form-group">
-    <label>Upload Image</label>
-    <label className={`file-upload ${formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}`}>
-        <input
-            type="file"
-            name="image"
-            accept="image/*"
-            onChange={handleChange}
-            className={formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}
-        />
-        <span className={`button ${formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}`}>
-            {formData.imageUploading ? 'Uploading...' : formData.image ? 'Uploaded' : 'Upload Image'}
-        </span>
-    </label>
-</div>
-
+                        <label>Upload Image</label>
+                        <label className={`file-upload ${formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}`}>
+                            <input
+                                type="file"
+                                name="image"
+                                accept="image/*"
+                                onChange={handleChange}
+                                className={formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}
+                            />
+                            <span className={`button ${formData.imageUploading ? 'uploading' : formData.image ? 'uploaded' : ''}`}>
+                                {formData.imageUploading ? 'Uploading...' : formData.image ? 'Uploaded' : 'Upload Image'}
+                            </span>
+                        </label>
+                    </div>
                     <div className="mt-3">
                         <button type="submit" className="btn btn-primary" disabled={loading}>
                             {loading ? 'Creating...' : 'Create'}

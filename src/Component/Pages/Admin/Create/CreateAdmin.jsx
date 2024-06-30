@@ -10,7 +10,7 @@ const CreateAdmin = ({ onCreateSuccess }) => {
         email: '',
         password: '',
         image: null,
-        imageUploading: false, // New state for uploading indication
+        imageUploading: false,
     });
     const [showPopup, setShowPopup] = useState(false);
     const token = JSON.parse(localStorage.getItem('user')).token;
@@ -23,20 +23,20 @@ const CreateAdmin = ({ onCreateSuccess }) => {
             setFormData({
                 ...formData,
                 image: files[0],
-                imageUploading: true, // Start uploading
+                imageUploading: true,
             });
             try {
                 const compressedImage = await imageCompression(files[0], { maxSizeMB: 1 });
                 setFormData({
                     ...formData,
                     image: compressedImage,
-                    imageUploading: false, // Finished uploading
+                    imageUploading: false,
                 });
             } catch (error) {
                 console.error('Error compressing image:', error);
                 setFormData({
                     ...formData,
-                    imageUploading: false, // Error during upload
+                    imageUploading: false,
                 });
             }
         } else {
@@ -71,8 +71,7 @@ const CreateAdmin = ({ onCreateSuccess }) => {
 
             const formDataToSubmit = new FormData();
             if (formData.image) {
-                const compressedImage = await imageCompression(formData.image, { maxSizeMB: 1 });
-                formDataToSubmit.append('image', compressedImage);
+                formDataToSubmit.append('image', formData.image, formData.image.name);
             }
 
             const response = await axios.post(`${url}?${params.toString()}`, formDataToSubmit, {

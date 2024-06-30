@@ -51,7 +51,10 @@ const Edit = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setFormData(response.data);
+            setFormData({
+                ...response.data,
+                image: null // Reset image to null when fetching user data
+            });
             setLoading(false);
         } catch (error) {
             console.error('Error fetching user details:', error);
@@ -61,18 +64,26 @@ const Edit = () => {
 
     const handleChange = async (e) => {
         const { name, value, files } = e.target;
-        if (name === 'image') {
+        if (name === 'image' && files.length > 0) {
             setFormData({
                 ...formData,
-                image: files[0], // Set the image file
                 imageUploading: true, // Start uploading state
             });
 
             try {
-                const compressedImage = await imageCompression(files[0], { maxSizeMB: 1 });
+                // Get the file extension
+                const originalFile = files[0];
+                const fileExtension = originalFile.name.split('.').pop();
+                
+                // Compress the image
+                const compressedImage = await imageCompression(originalFile, { maxSizeMB: 1 });
+
+                // Create a new file with the same name and original extension
+                const compressedImageWithExtension = new File([compressedImage], `${compressedImage.name}.${fileExtension}`, { type: compressedImage.type });
+
                 setFormData({
                     ...formData,
-                    image: compressedImage,
+                    image: compressedImageWithExtension,
                     imageUploading: false, // Upload complete
                 });
             } catch (error) {
@@ -200,6 +211,9 @@ const Edit = () => {
                                 {formData.imageUploading ? 'Uploading...' : formData.image ? 'Uploaded' : 'Upload Image'}
                             </span>
                         </label>
+                        {formData.image && !formData.imageUploading 
+                            
+                        }
                     </div>
 
                     <div className="mt-3">

@@ -4,15 +4,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 
 const EditAdmin = () => {
-    const { userId } = useParams(); // Get userId from URL parameter
+    const { userId } = useParams();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         id: '',
         displayName: '',
         email: '',
-        role: 'Admin', // Set default role if needed
-        image: null, // To store the selected file
-        imageUploading: false, // To track image upload status
+        role: 'Admin',
+        image: null,
+        imageUploading: false,
     });
     const [loading, setLoading] = useState(true);
     const token = JSON.parse(localStorage.getItem('user'))?.token;
@@ -25,7 +25,7 @@ const EditAdmin = () => {
         setShowNotification(true);
         setTimeout(() => {
             setShowNotification(false);
-        }, 2000); // Hide after 2 seconds
+        }, 2000);
     };
 
     const showFailureNotification = () => {
@@ -33,7 +33,7 @@ const EditAdmin = () => {
         setShowNotification(true);
         setTimeout(() => {
             setShowNotification(false);
-        }, 2000); // Hide after 2 seconds
+        }, 2000);
     };
 
     useEffect(() => {
@@ -61,23 +61,22 @@ const EditAdmin = () => {
     const handleChange = async (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
-            setFormData({
-                ...formData,
-                image: files[0], // Set the image file
-                imageUploading: true, // Start uploading
-            });
             try {
+                setFormData({
+                    ...formData,
+                    imageUploading: true,
+                });
                 const compressedImage = await imageCompression(files[0], { maxSizeMB: 1 });
                 setFormData({
                     ...formData,
                     image: compressedImage,
-                    imageUploading: false, // Upload complete
+                    imageUploading: false,
                 });
             } catch (error) {
                 console.error('Error compressing image:', error);
                 setFormData({
                     ...formData,
-                    imageUploading: false, // Upload failed
+                    imageUploading: false,
                 });
             }
         } else {
@@ -110,10 +109,9 @@ const EditAdmin = () => {
                 email: formData.email,
             });
 
-            // Prepare form data for image if it exists
             const formDataToSubmit = new FormData();
             if (formData.image) {
-                formDataToSubmit.append('image', formData.image);
+                formDataToSubmit.append('image', formData.image, formData.image.name);
             }
 
             await axios.put(`${url}?${params.toString()}`, formDataToSubmit, {
@@ -123,9 +121,9 @@ const EditAdmin = () => {
                 }
             });
 
-            showSuccessNotification(); // Show success notification
+            showSuccessNotification();
             setTimeout(() => {
-                navigate('/DashboardMain/ListAdmin'); // Redirect to the admin list page
+                navigate('/DashboardMain/ListAdmin');
             }, 2000);
         } catch (error) {
             console.error('Error updating admin:', error);
@@ -176,7 +174,6 @@ const EditAdmin = () => {
                                 onChange={handleChange}
                             >
                                 <option value="Admin">Admin</option>
-                                {/* Add more roles as needed */}
                             </select>
                             {errors.role && <span className="error">{errors.role}</span>}
                         </div>
